@@ -23,7 +23,7 @@ import business from '../assets/business.png'
 import user from '../assets/user.png'
 import email from '../assets/email.png'
 import password from '../assets/password.png'
-import AIvideo from '../assets/AI-video.mp4'
+import AIvideo from '../assets/AI-Video.mp4'
 
 
 
