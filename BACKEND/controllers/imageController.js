@@ -19,46 +19,49 @@ export const generateImage = async (req,res)=>{
       }
       const user = await userModel.findById(userID);
 
-      const formData = new FormData();
+        const formData = new FormData();
 
-      formData.append("prompt", prompt);
+        formData.append("prompt", prompt);
 
-      const { data } = await axios.post(
-        "https://clipdrop-api.co/text-to-image/v1",
-        formData,
-        {
-          headers: {
-            "x-api-key": process.env.API_KEY,
-          },
-          responseType: "arraybuffer",
+        const { data } = await axios.post(
+          "https://clipdrop-api.co/text-to-image/v1",
+          formData,
+          {
+            headers: {
+              "x-api-key": process.env.API_KEY,
+            },
+            responseType: "arraybuffer",
+          }
+        );
+
+        if (!data) {
+          return res.json({
+            success: false,
+            message: "Failed to generate image",
+          });
         }
-      );
 
-      if (!data) {
-        return res.json({
-          success: false,
-          message: "Failed to generate image",
-        });
-      }
+        const base64Image = Buffer.from(data, "binary").toString("base64");
 
-      const base64Image = Buffer.from(data, "binary").toString("base64");
+        const resultImage = `data:image/png;base64,${base64Image}`;
 
-      const resultImage = `data:image/png;base64,${base64Image}`;
+        const updatedUser = await userModel.findByIdAndUpdate(
+          userID,
+          {
+            creditBalance: user.creditBalance - 1,
+          },
+          { new: true }
+        );
 
-      const updatedUser = await userModel.findByIdAndUpdate(
-        userID,
-        {
+        res.json({
+          success: true,
+          message: "image generated",
           creditBalance: user.creditBalance - 1,
-        },
-        { new: true }
-      ); 
+          resultImage,
+        });
+      
 
-      res.json({
-        success: true,
-        message: "image generated",
-        creditBalance: user.creditBalance - 1,
-        resultImage,
-      });
+      
     } catch (error) {
         console.log(error);
         res.json({

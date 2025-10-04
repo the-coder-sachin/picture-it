@@ -4,8 +4,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import files from '../assets/assets'
 import { appContext } from '../context/appContext'
 const Navbar = () => {
+  const [logoutBtn, setLogoutBtn] = useState(false)
     const navigate = useNavigate()
-    const {user, setLoginPopup} = useContext(appContext)
+    const {user, setLoginPopup, logout, credit} = useContext(appContext)
+    
    
     
   return (
@@ -23,21 +25,24 @@ const Navbar = () => {
         </Link>
         {user ? (
           <div className="flex items-center justify-evenly gap-2 sm:w-fit md:text-sm text-xs ">
-            <div className="credit flex sm-385:gap-2 gap-1 items-center text-gray-500 font-semibold bg-blue-200 rounded-full py-2 px-2 sm:px-4 cursor-pointer">
+            <div onClick={()=>navigate('/buy-credit')} className="credit flex sm-385:gap-2 gap-1 items-center text-gray-500 font-semibold bg-blue-200 rounded-full py-2 px-2 sm:px-4 cursor-pointer">
               <img src={files.credit} alt="credit" className="w-5 sm:w-6" />
-              <p className='text-nowrap'>Credits Left : 50</p>
+              <p className='text-nowrap'>Credits Left : {credit}</p>
             </div>
             <div className="profile flex items-center justify-between gap-2">
-              <p className='hidden sm:block'>Hi, Sachin</p>
+              <p className='hidden sm:block'>Hi, {user.name}</p>
               <div className="group relative">
                 <img
                   src={files.boy}
                   alt="profile"
+                  onClick={()=>setLogoutBtn(prev=>!prev)}
                   className="w-10 md:w-9 cursor-pointer"
                 />
-                <div className="absolute bg-red-200 text-red-700 bottom-[-30px] right-0 px-3 py-1 hidden rounded-md group-hover:block">
+                {logoutBtn && <div 
+                onClick={logout}
+                className="absolute bg-red-200 text-red-700 hover:bg-red-300 transition-all duration-500 bottom-[-40px] right-0 px-3 py-1  rounded-md cursor-pointer font-semibold rounded-tr-none pt-2">
                   logout
-                </div>
+                </div>}
               </div>
             </div>
           </div>

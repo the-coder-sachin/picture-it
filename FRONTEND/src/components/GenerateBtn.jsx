@@ -8,6 +8,7 @@ const GenerateBtn = () => {
     const {user , setLoginPopup} = useContext(appContext)
 
     const onClickHandler = ()=>{
+      
         if(user){
             navigate('/result')
         }else{

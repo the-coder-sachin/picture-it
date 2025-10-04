@@ -1,11 +1,56 @@
 import React, { useContext, useEffect, useState } from 'react'
 import files from '../assets/assets'
 import { appContext } from '../context/appContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const Login = () => {
     const [state, setState] = useState('Login')
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('')
 
-    const {setLoginPopup} = useContext(appContext)
+    const {setLoginPopup, backendURL, setToken, setUser} = useContext(appContext)
+
+    const onSubmitHandler = async (e)=>{
+      e.preventDefault();
+      console.log(`check`);
+      
+      try {
+        if(state==='Login'){
+          const {data} = await axios.post(backendURL+'/api/user/login', {email, password});
+          
+          
+          if(data.success){
+            setToken(data.token)
+            setUser(data.user)
+            localStorage.setItem('token', data.token)
+            setLoginPopup(false)
+            toast.success('welcome! '+ data.user.name)
+          }else{
+            toast.error(data.message)
+          }
+        }else{
+           const { data } = await axios.post(backendURL + "/api/user/register", {
+             name,
+             email,
+             password,
+           });
+
+           if (data.success) {
+             setToken(data.token);
+             setUser(data.user);
+             localStorage.setItem("token", data.token);
+             setLoginPopup(false);
+           } else {
+             toast.error(data.message);
+           }
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error(error.message)
+      }
+    }
 
     useEffect(() => {
       document.body.style.overflow = `hidden`
@@ -18,8 +63,8 @@ const Login = () => {
     
   return (
     <>
-      <div className="h-screen absolute backdrop-blur-sm backdrop-brightness-50 z-10 w-screen top-0 flex justify-center items-center">
-        <form className="bg-white p-5 rounded-lg shadow-2xl flex flex-col items-center relative">
+      <div className="h-screen fixed backdrop-blur-sm backdrop-brightness-50 z-10 w-screen top-0 flex justify-center items-center">
+        <form onSubmit={onSubmitHandler} className="bg-white p-5 rounded-lg shadow-2xl flex flex-col items-center relative">
           <h1 className="text-xl font-medium text-neutral-700 mb-4">{state}</h1>
           <div className="flex flex-col gap-3">
             {state != "Login" && (
@@ -33,6 +78,8 @@ const Login = () => {
                   type="text"
                   required
                   placeholder="Full Name"
+                  value={name}
+                  onChange={e=>setName(e.target.value)}
                   className="text-neutral-700 placeholder:text-neutral-300 text-xs outline-none w-[230px]"
                 />
               </div>
@@ -41,6 +88,8 @@ const Login = () => {
               <img src={files.email} alt="user" className="size-5 opacity-25" />
               <input
                 type="email"
+                value={email}
+                onChange={e=>setEmail(e.target.value)}
                 required
                 placeholder="Email Id"
                 className="text-neutral-700 placeholder:text-neutral-300 text-xs outline-none w-[230px]"
@@ -54,6 +103,8 @@ const Login = () => {
               />
               <input
                 type="password"
+                value={password}
+                onChange={e=>setPassword(e.target.value)}
                 required
                 placeholder="Password"
                 className="text-neutral-700 placeholder:text-neutral-300 text-xs outline-none w-[230px]"

@@ -1,4 +1,4 @@
-import express, { json, urlencoded } from 'express'
+import express, {  urlencoded } from 'express'
 import cors from 'cors'
 import connectDB from './config/mongoDb.js';
 import dotenv from 'dotenv'
